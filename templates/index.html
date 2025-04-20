@@ -1,0 +1,312 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Dev Quiz</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"></link>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2>
+      Welcome, {{request.user.username|capfirst}}
+    </h2>
+    <form action="{% url "quiz:calculate_score" %}" method="post">
+
+      {% csrf_token %}
+
+    <h1 class="quiz-title">Web Dev Quiz</h1>
+    <p class="quiz-subtitle">Test your knowledge of HTML, CSS, and JavaScript</p>
+
+    <!-- Quiz section -->
+    {% for q in question %}
+
+    <div id="quiz-section">
+      {% comment %} <div class="progress-bar">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 20%"></div>
+      </div> {% endcomment %}
+      <p class="progress-text">Question <span id="current-question"> {{q.id}} </span> of <span id="total-questions">5</span></p>
+      <div class="quiz-card">
+        <h3 class="question" id="question-text">
+          {{q.question_text}}
+        </h3>
+        <div class="options" id="options-container">
+          {% for c in q.choices.all %}
+          <label>
+              <input type="radio"
+                     name="choice_{{ q.id }}"
+                     value="{{ c.id }}">
+              {{ c.option }}. {{ c.choice_text }}
+          </label><br>
+      {% endfor %}
+    </div>
+          <script src="{% static 'js/index.js' %}"></script>
+  
+      </div>
+      
+    </div>
+    {% endfor %}
+    <button type="submit" id="next-button" class="button">Sumbit</button>
+      
+    </form>
+    <br>
+
+    {% comment %} Results section (initially hidden)
+    <div id="results-section" class="hidden">
+      <div class="quiz-card">
+        <h2 class="question">Quiz Complete!</h2>
+        
+        <div class="result-circle">
+          <span class="result-percentage" id="result-percentage">0%</span>
+        </div>
+        
+        <div class="result-stats">
+          <p>You got <span id="correct-answers">0</span> out of <span id="total-questions-result">5</span> questions correct</p>
+        </div>
+        
+        <div class="result-feedback" id="feedback-text">
+          Keep learning and try again soon.
+        </div>
+        
+        <button id="restart-button" class="button">Take Quiz Again</button>
+      </div>
+    </div> {% endcomment %}
+  </div>
+<script>
+  //Next question
+  function nextQuestion() {
+    if (currentQuestion < quizQuestions.length - 1) {
+      currentQuestion++;
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+</script>
+  <!-- <script>
+    // Quiz data
+    const quizQuestions = [
+      {
+        question: "What does HTML stand for?",
+        options: [
+          "Hyper Text Markup Language",
+          "High Tech Multi Language",
+          "Hyper Transfer Markup Language",
+          "Home Tool Markup Language"
+        ],
+        correctAnswer: 0
+      },
+      {
+        question: "Which CSS property is used to control the space between elements?",
+        options: [
+          "spacing",
+          "margin",
+          "padding",
+          "border-spacing"
+        ],
+        correctAnswer: 1
+      },
+      {
+        question: "Which of the following is NOT a JavaScript data type?",
+        options: [
+          "String",
+          "Boolean",
+          "Float",
+          "Object"
+        ],
+        correctAnswer: 2
+      },
+      {
+        question: "Which HTML tag is used to create a hyperlink?",
+        options: [
+          "<link>",
+          "<a>",
+          "<href>",
+          "<url>"
+        ],
+        correctAnswer: 1
+      },
+      {
+        question: "Which CSS property changes the text color?",
+        options: [
+          "text-color",
+          "font-color",
+          "color",
+          "text-style"
+        ],
+        correctAnswer: 2
+      }
+    ];
+  
+    // Quiz state
+    let currentQuestion = 0;
+    let selectedAnswers = {};
+    let isAnswerChecked = false;
+  
+    // DOM elements
+    const quizSection = document.getElementById('quiz-section');
+    const resultsSection = document.getElementById('results-section');
+    const progressFill = document.getElementById('progress-fill');
+    const currentQuestionEl = document.getElementById('current-question');
+    const totalQuestionsEl = document.getElementById('total-questions');
+    const totalQuestionsResultEl = document.getElementById('total-questions-result');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const checkButton = document.getElementById('check-button');
+    const nextButton = document.getElementById('next-button');
+    const restartButton = document.getElementById('restart-button');
+    const resultPercentageEl = document.getElementById('result-percentage');
+    const correctAnswersEl = document.getElementById('correct-answers');
+    const feedbackTextEl = document.getElementById('feedback-text');
+  
+    // Set total questions
+    totalQuestionsEl.textContent = quizQuestions.length;
+    totalQuestionsResultEl.textContent = quizQuestions.length;
+  
+    // Initialize quiz
+    function loadQuestion() {
+      const question = quizQuestions[currentQuestion];
+      
+      // Update progress
+      progressFill.style.width = `${((currentQuestion + 1) / quizQuestions.length) * 100}%`;
+      currentQuestionEl.textContent = currentQuestion + 1;
+      
+      // Set question text
+      questionText.textContent = question.question;
+      
+      // Clear options
+      optionsContainer.innerHTML = '';
+      
+      // Add options
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option';
+        button.dataset.index = index;
+        button.textContent = option;
+        
+        // Check if option was previously selected
+        if (selectedAnswers[currentQuestion] === index) {
+          button.classList.add('selected');
+        }
+        
+        button.addEventListener('click', () => selectOption(index));
+        optionsContainer.appendChild(button);
+      });
+      
+      // Reset buttons
+      checkButton.classList.remove('hidden');
+      nextButton.classList.add('hidden');
+      isAnswerChecked = false;
+      
+      // Disable check button if no answer is selected
+      checkButton.disabled = selectedAnswers[currentQuestion] === undefined;
+    }
+  
+    // Select option
+    function selectOption(index) {
+      if (isAnswerChecked) return;
+      
+      // Remove selected class from all options
+      const options = optionsContainer.querySelectorAll('.option');
+      options.forEach(option => option.classList.remove('selected'));
+      
+      // Add selected class to clicked option
+      options[index].classList.add('selected');
+      
+      // Save selected answer
+      selectedAnswers[currentQuestion] = index;
+      
+      // Enable check button
+      checkButton.disabled = false;
+    }
+  
+    // Check answer
+    function checkAnswer() {
+      if (selectedAnswers[currentQuestion] === undefined) return;
+      
+      const correctAnswer = quizQuestions[currentQuestion].correctAnswer;
+      const selectedAnswer = selectedAnswers[currentQuestion];
+      
+      // Mark correct and incorrect answers
+      const options = optionsContainer.querySelectorAll('.option');
+      options[correctAnswer].classList.add('correct');
+      
+      if (selectedAnswer !== correctAnswer) {
+        options[selectedAnswer].classList.add('incorrect');
+      }
+      
+      // Show next button, hide check button
+      checkButton.classList.add('hidden');
+      nextButton.classList.remove('hidden');
+      isAnswerChecked = true;
+    }
+  
+    
+  
+    // Show results
+    function showResults() {
+      // Calculate results
+      let correctAnswers = 0;
+      
+      quizQuestions.forEach((question, index) => {
+        if (selectedAnswers[index] === question.correctAnswer) {
+          correctAnswers++;
+        }
+      });
+      
+      const percentage = Math.round((correctAnswers / quizQuestions.length) * 100);
+      
+      // Set result elements
+      resultPercentageEl.textContent = `${percentage}%`;
+      correctAnswersEl.textContent = correctAnswers;
+      
+      // Set feedback message
+      let feedback = "";
+      let resultClass = "";
+      
+      if (percentage >= 80) {
+        feedback = "Outstanding! You have excellent knowledge.";
+        resultClass = "result-good";
+      } else if (percentage >= 60) {
+        feedback = "Good job! You have a solid understanding.";
+        resultClass = "result-medium";
+      } else if (percentage >= 40) {
+        feedback = "Not bad, but there's room for improvement.";
+        resultClass = "result-medium";
+      } else {
+        feedback = "Keep learning and try again soon.";
+        resultClass = "result-poor";
+      }
+      
+      feedbackTextEl.textContent = feedback;
+      resultPercentageEl.className = `result-percentage ${resultClass}`;
+      
+      // Hide quiz, show results
+      quizSection.classList.add('hidden');
+      resultsSection.classList.remove('hidden');
+    }
+  
+    // Restart quiz
+    function restartQuiz() {
+      currentQuestion = 0;
+      selectedAnswers = {};
+      
+      // Hide results, show quiz
+      resultsSection.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      
+      loadQuestion();
+    }
+  
+    // Event listeners
+    checkButton.addEventListener('click', checkAnswer);
+    nextButton.addEventListener('click', nextQuestion);
+    restartButton.addEventListener('click', restartQuiz);
+  
+    // Initialize quiz
+    loadQuestion();
+  </script> -->
+</body>
+</html>

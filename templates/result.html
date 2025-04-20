@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Page</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"></link>
+
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="results-section">
+            <div class="quiz-card">
+              <h2 class="question">Quiz Complete!</h2>
+              
+              <div class="result-circle">
+                <span class="result-percentage" id="result-percentage">0%</span>
+              </div>
+              
+              <div class="result-stats">
+                <p>You got <span id="correct-answers">0</span> out of <span id="total-questions-result">5</span> questions correct</p>
+              </div>
+              
+              <div class="result-feedback" id="feedback-text">
+                Keep learning and try again soon.
+              </div>
+              
+              <button id="restart-button" class="button">Take Quiz Again</button>
+            </div>
+          </div>
+    </div>
+</body>
+</html>
