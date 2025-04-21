@@ -12,21 +12,22 @@
 </head>
 <body>
     <div class="quiz-container">
-        <form action="{% url "quiz:login_user" %}" method="post">
+        <form action="{% url "quiz:register_user" %}" method="post">
             {% comment %} {% csrf_token %} {% endcomment %}
             {% csrf_token %}
         <div id="results-section">
             <div class="quiz-card">
-              <h2 class="question">Login</h2>
+              <h2 class="question">Register</h2>
               
               
-              <div class="result-stats">
+              {% comment %} <div class="result-stats">
                 <input type="text" name="username" class="form-control">
               </div>
               
               <div class="result-stats">
                 <input type="password" name="pswd" class="form-control">
-              </div>
+              </div> {% endcomment %}
+              {{form.as_p}}
               
               <button type="submit" id="restart-button" class="button">Login</button>
             </div>

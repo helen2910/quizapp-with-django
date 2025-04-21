@@ -8,4 +8,5 @@ urlpatterns = [
     path('calculate_score/', views.calculate_score, name="calculate_score"),
     path('result_page/', views.result_page, name="result_page"),
     path('login_user/', views.login_user, name="login_user"),
+    path('register_user/', views.register_user, name="register_user"),
 ]

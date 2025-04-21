@@ -15,11 +15,17 @@
               <h2 class="question">Quiz Complete!</h2>
               
               <div class="result-circle">
-                <span class="result-percentage" id="result-percentage">0%</span>
+                <span class="result-percentage" id="result-percentage">
+                  {{user_score}}
+                </span>
               </div>
               
               <div class="result-stats">
-                <p>You got <span id="correct-answers">0</span> out of <span id="total-questions-result">5</span> questions correct</p>
+                <p>You got <span id="correct-answers">
+                  {{correct_count}}
+                </span> out of <span id="total-questions-result">
+                  {{len_of_questions}}
+                </span> questions correct</p>
               </div>
               
               <div class="result-feedback" id="feedback-text">

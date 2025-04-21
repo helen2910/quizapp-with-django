@@ -8,8 +8,15 @@ OPTIONS = (
     ("D","D"),
 )
 class AppUser(AbstractUser):
+    username =models.CharField(max_length=255, null=True, blank=True,unique=True)    
     score = models.IntegerField(default=0)
+    # num_of_correct_choices = models.IntegerField(default=0)
+    has_submitted = models.BooleanField(default=False)
     
+    def __str__(self):
+        return self.username
+    
+
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
@@ -28,3 +35,5 @@ class Choices(models.Model):
     option = models.CharField(max_length=1, choices=OPTIONS)
     is_correct = models.BooleanField(default=False)
     
+    class Meta:
+        verbose_name_plural = "Choices"
